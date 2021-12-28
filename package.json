@@ -1,0 +1,27 @@
+{
+  "name": "icbc-bot",
+  "version": "1.0.0",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.17.2",
+    "node-cron": "^3.0.0",
+    "nodemailer": "^6.7.2",
+    "puppeteer": "^13.0.1",
+    "sqlite3": "^5.0.2",
+    "twilio": "^3.72.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kategranstrom/icbc-bot.git"
+  },
+  "author": "Kate Granstrom",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kategranstrom/icbc-bot/issues"
+  },
+  "homepage": "https://github.com/kategranstrom/icbc-bot#readme"
+}

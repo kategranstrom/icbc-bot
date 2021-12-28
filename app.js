@@ -29,7 +29,7 @@ function handleParams(params, res) {
                 const textArray = text.split(' ');
                 const date = new Date(textArray[1]).getTime();
 
-                if ( textArray.length < 2 || ! date ) {
+                if ( textArray.length != 2 || ! date ) {
                         twiml.message("Error: format of text should be:\n'Earliest mm/dd/yyyy'");
                         res.end(twiml.toString());
                         console.log(twiml.toString(), text);
@@ -53,7 +53,7 @@ function handleParams(params, res) {
         } else if (text.startsWith('Update')) {
                 const textArray = text.split(' ');
 
-                if ( textArray.length < 4 ) {
+                if ( textArray.length != 4 ) {
                         twiml.message("Error: format of text should be:\n'Update lastname licensenumber keyword location'");
                         res.end(twiml.toString());
                         console.log(twiml.toString(), text);
@@ -74,14 +74,14 @@ function handleParams(params, res) {
                         res.end(twiml.toString());
                 })
 
-        } else if (text.startsWith('Cancel')) {
+        } else if (text.startsWith('Finish')) {
                 const sql = 'DELETE FROM person WHERE phonenumber = ?';
                 const sqlparams = [params.From];
                 db.run(sql, sqlparams, function (err) {
                         if (err) {
                                 twiml.message("Error:" + err.message);
                         } else {
-                                twiml.message("Successfully canceled the ICBC bot");
+                                twiml.message("Successfully stopped the ICBC bot");
                         }
                         console.log(twiml.toString(), sqlparams, this.changes);
                         res.end(twiml.toString());
@@ -89,7 +89,7 @@ function handleParams(params, res) {
 
         } else if (text.startsWith('Start')) {
                 const textArray = text.split(' ');
-                if ( textArray.length < 4 ) {
+                if ( textArray.length != 4 ) {
                         twiml.message("To start the ICBC bot, send a text with the format:\n'Start lastname licensenumber keyword location'");
                         res.end(twiml.toString());
                         console.log(twiml.toString(), text);
@@ -110,7 +110,7 @@ function handleParams(params, res) {
                         res.end(twiml.toString());
                 })
         } else {
-                twiml.message("Error: text format should be one of:\n'Start lastname licensenumber keyword location'\n'Cancel'\n'Earliest mm/dd/yyyy'\n'Latest mm/dd/yyyy'\n'Update lastname licensenumber keyword location'");
+                twiml.message("Error: text format should be one of:\n'Start lastname licensenumber keyword location'\n'Finish'\n'Earliest mm/dd/yyyy'\n'Latest mm/dd/yyyy'\n'Update lastname licensenumber keyword location'");
                 console.log(twiml.toString(), text);
                 res.end(twiml.toString());
         }

@@ -97,7 +97,7 @@ async function checkForAppointment(page, phoneNumber, lastName, licenseNumber, m
 }
 
 async function run () {
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox','--disable-setuid-sandbox']});
   const page = await browser.newPage();
 
   const sql = "SELECT * FROM person";

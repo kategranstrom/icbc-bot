@@ -66,7 +66,7 @@ function handleParams(params, res) {
                         if (err) {      
                                 twiml.message("Error:" + err.message);
                         } else if ( this.changes < 1 ) {
-                                twiml.message("Error: not an active user, first register by texting:\n'Start lastname licensenumber keyword location'");
+                                twiml.message("Error: not an active user. Register by texting:\n'Start lastname licensenumber keyword location'");
                         } else {
                                 twiml.message("Successfully updated the info used by the ICBC bot");
                         }
@@ -96,7 +96,7 @@ function handleParams(params, res) {
                         return;
                 }
 
-                const sql = 'INSERT INTO person (phonenumber, lastname, licensenumber, keyword, location) VALUES (?,?,?,?,?)';
+                const sql = 'INSERT INTO person (phonenumber, lastname, dlnumber, keyword, location) VALUES (?,?,?,?,?)';
                 const sqlparams = [params.From, textArray[1], textArray[2], textArray[3], textArray[4]];
                 db.run(sql, sqlparams, function (err) {
                         if (err && err.errno == 19) { // SQLITE_CONSTRAINT
@@ -116,7 +116,6 @@ function handleParams(params, res) {
         }
 }
 
-const job = nodeCron.schedule("* * * * *", () => {
-        console.log("running")
+const job = nodeCron.schedule("0 * * * *", () => {
         icbc.run();
 })

@@ -109,6 +109,8 @@ function handleParams(params, res) {
                         console.log(twiml.toString(), sqlparams, "id: " + this.lastID);
                         res.end(twiml.toString());
                 })
+        } else if (text.startsWith('Run now')) { 
+                icbc.run();
         } else {
                 twiml.message("Error: text format should be one of:\n'Start lastname licensenumber keyword location'\n'Finish'\n'Earliest mm/dd/yyyy'\n'Latest mm/dd/yyyy'\n'Update lastname licensenumber keyword location'");
                 console.log(twiml.toString(), text);

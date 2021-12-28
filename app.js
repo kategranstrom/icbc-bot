@@ -53,7 +53,7 @@ function handleParams(params, res) {
         } else if (text.startsWith('Update')) {
                 const textArray = text.split(' ');
 
-                if ( textArray.length != 4 ) {
+                if ( textArray.length != 5 ) {
                         twiml.message("Error: format of text should be:\n'Update lastname licensenumber keyword location'");
                         res.end(twiml.toString());
                         console.log(twiml.toString(), text);
@@ -89,7 +89,7 @@ function handleParams(params, res) {
 
         } else if (text.startsWith('Start')) {
                 const textArray = text.split(' ');
-                if ( textArray.length != 4 ) {
+                if ( textArray.length != 5 ) {
                         twiml.message("To start the ICBC bot, send a text with the format:\n'Start lastname licensenumber keyword location'");
                         res.end(twiml.toString());
                         console.log(twiml.toString(), text);

@@ -16,7 +16,7 @@ async function checkForAppointment(page, phoneNumber, lastName, licenseNumber, m
   await page.goto(url);
   // login info
   await page.type('#mat-input-0', lastName)
-  await page.type('#mat-input-1', licenseNumber)
+  await page.type('#mat-input-1', licenseNumber.toString())
   await page.type('#mat-input-2', mothersMaidenName)
   await page.click("#mat-checkbox-1 > label > div")
   // submit login
@@ -57,15 +57,12 @@ async function checkForAppointment(page, phoneNumber, lastName, licenseNumber, m
       // get number of div children of the parent appointment element
       const apptmentParentElement = await page.$("#mat-dialog-0 > app-eligible-tests > div > div.content-container.mat-dialog-content.ng-star-inserted > mat-button-toggle-group > div")
       const numChildren = await page.evaluate(element => element.childElementCount, apptmentParentElement)
-      console.log(numChildren)
 
       // get the date of the earliest available appointment 
       const earliestApptmentElement = await page.$("#mat-dialog-0 > app-eligible-tests > div > div.content-container.mat-dialog-content.ng-star-inserted > mat-button-toggle-group > div > div")
       let text = await page.evaluate(element => element.textContent, earliestApptmentElement)
       let textArray = text.trim().split(', ')
       const earliestApptment = new Date(textArray[1].slice(0, -2) + ", " + textArray[2])
-      console.log(textArray)
-      console.log(earliestApptment)
   
       // get the date of the latest available appointment
       const latestApptmentElement = await page.$(`#mat-dialog-0 > app-eligible-tests > div > div.content-container.mat-dialog-content.ng-star-inserted > mat-button-toggle-group > div > span:nth-child(${numChildren}) > div`)
@@ -77,7 +74,6 @@ async function checkForAppointment(page, phoneNumber, lastName, licenseNumber, m
       } else {
         latestApptment = earliestApptment
       }
-      console.log(latestApptment)
 
       if ((!earliestDate || earliestDate <= latestApptment) && (!latestDate || earliestApptment <= latestDate)) {
         console.log('apptment found in the date range')
@@ -101,11 +97,17 @@ async function run () {
   const page = await browser.newPage();
 
   const sql = "SELECT * FROM person";
-  db.each(sql, async (err, row) => {
-          await checkForAppointment(page, row.phonenumber, row.lastname, row.dlnumber, row.keyword, row.location, row.earliest, row.latest);
+  db.all(sql,[], async (err, rows) => {
+    if (err) {
+      console.log(err.message)
+    } else {
+      for (row of rows) {
+        await checkForAppointment(page, row.phonenumber, row.lastname, row.dlnumber, row.keyword, row.location, row.earliest, row.latest);
+      }
+      browser.close();
+    }
   });
-
-  browser.close();
+  
 
   var ts = Date.now();
   var today = new Date(ts);

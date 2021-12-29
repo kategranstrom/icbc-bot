@@ -16,6 +16,10 @@ app.listen(PORT, () => {
         console.log(`Server listening on port ${PORT}`);
 })
 
+app.get('/', function (req, res) {
+        res.send('<html><body><h1>ICBC Bot</h1></body></html>');
+    });
+
 app.post('/inbound', (req, res) => {
         handleParams(req.body, res);
 })
@@ -118,6 +122,16 @@ function handleParams(params, res) {
         }
 }
 
-const job = nodeCron.schedule("0 * * * *", () => {
+const job = nodeCron.schedule("* * * * *", () => {
         icbc.run();
 })
+/*icbc.run();
+var text = "Start Granstrom 1946690 Kelsall Revelstoke";
+var textArray = text.split(" ");
+
+const sql = 'INSERT INTO person (phonenumber, lastname, dlnumber, keyword, location) VALUES (?,?,?,?,?)';
+const sqlparams = ["+12508371392", textArray[1], textArray[2], textArray[3], textArray[4]];
+db.run(sql, sqlparams, function (err) {
+        
+        console.log( sqlparams, "id: " + this.lastID, err.message);
+})*/

@@ -137,6 +137,6 @@ function handleParams(params, res) {
         }
 }
 
-const job = nodeCron.schedule("* * * * *", () => {
+const job = nodeCron.schedule("0 * * * *", () => {
         icbc.run();
 })

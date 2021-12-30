@@ -2,7 +2,7 @@ const express = require('express');
 const MessagingResponse = require('twilio').twiml.MessagingResponse;
 const nodeCron = require("node-cron");
 const icbc = require("./icbc.js");
-var db = require("./persondb.js");
+const pool = require("./usersdb.js");
 
 const { json, urlencoded } = express;
 
@@ -40,17 +40,17 @@ function handleParams(params, res) {
                         return;
                 }
 
-                const sql = `UPDATE person set ${textArray[0].toLowerCase()} = ? WHERE phonenumber = ?`;
+                const sql = `UPDATE users set ${textArray[0].toLowerCase()} = $1 WHERE phonenumber = $2`;
                 const sqlparams = [date, params.From]
-                db.run(sql, sqlparams, function (err) {
+                pool.query(sql, sqlparams, function (err, result) {
                         if (err) {      
                                 twiml.message("Error:" + err.message);
-                        } else if ( this.changes < 1 ) {
+                        } else if ( result.rowCount < 1 ) {
                                 twiml.message("Error: not an active user, first register by texting:\n'Start lastname licensenumber keyword location'");
                         } else {
                                 twiml.message(`Successfully updated ${textArray[0].toLowerCase()} date to check for appointments`);
                         }
-                        console.log(twiml.toString(), text, params.From, this.changes)
+                        console.log(twiml.toString(), text, params.From, result.rowCount)
                         res.end(twiml.toString());
                 })
 
@@ -64,30 +64,30 @@ function handleParams(params, res) {
                         return;
                 }
 
-                const sql = `UPDATE person set lastname = ?, dlnumber = ?, keyword = ?, location = ? WHERE phonenumber = ?`;
+                const sql = `UPDATE users set lastname = $1, dlnumber = $2, keyword = $3, location = $4 WHERE phonenumber = $5`;
                 const sqlparams = [textArray[1], textArray[2], textArray[3], textArray[4], params.From]
-                db.run(sql, sqlparams, function (err) {
+                pool.query(sql, sqlparams, function (err, result) {
                         if (err) {      
                                 twiml.message("Error:" + err.message);
-                        } else if ( this.changes < 1 ) {
+                        } else if ( result.rowCount < 1 ) {
                                 twiml.message("Error: not an active user. Register by texting:\n'Start lastname licensenumber keyword location'");
                         } else {
                                 twiml.message("Successfully updated the info used by the ICBC bot");
                         }
-                        console.log(twiml.toString(), text, params.From, this.changes);
+                        console.log(twiml.toString(), text, params.From, result.rowCount);
                         res.end(twiml.toString());
                 })
 
         } else if (text.startsWith('Finish')) {
-                const sql = 'DELETE FROM person WHERE phonenumber = ?';
+                const sql = 'DELETE FROM users WHERE phonenumber = $1';
                 const sqlparams = [params.From];
-                db.run(sql, sqlparams, function (err) {
+                pool.query(sql, sqlparams, function (err, result) {
                         if (err) {
                                 twiml.message("Error:" + err.message);
                         } else {
                                 twiml.message("Successfully stopped the ICBC bot");
                         }
-                        console.log(twiml.toString(), sqlparams, this.changes);
+                        console.log(twiml.toString(), sqlparams, result.rowCount);
                         res.end(twiml.toString());
                 })
 
@@ -100,17 +100,17 @@ function handleParams(params, res) {
                         return;
                 }
 
-                const sql = 'INSERT INTO person (phonenumber, lastname, dlnumber, keyword, location) VALUES (?,?,?,?,?)';
+                const sql = 'INSERT INTO users (phonenumber, lastname, dlnumber, keyword, location) VALUES ($1,$2,$3,$4,$5)';
                 const sqlparams = [params.From, textArray[1], textArray[2], textArray[3], textArray[4]];
-                db.run(sql, sqlparams, function (err) {
-                        if (err && err.errno == 19) { // SQLITE_CONSTRAINT
+                pool.query(sql, sqlparams, function (err, result) {
+                        if (err && err.code == 23505) { // unique constraint violation
                                 twiml.message("Error: the ICBC bot is already runnning for this phone number. To change your information, text 'Update lastname licensenumber keyword location");
                         } else if (err) {
                                 twiml.message("Error:" + err.message);
                         } else {
                                 twiml.message("Successfully started the ICBC bot. You can specify the earliest and latest date to check for an appointment by texting 'Earliest mm/dd/yyy' or 'Latest mm/dd/yyyy'");
                         }
-                        console.log(twiml.toString(), sqlparams, "id: " + this.lastID);
+                        console.log(twiml.toString(), sqlparams);
                         res.end(twiml.toString());
                 })
         } else if (text.startsWith('Run now')) { 
@@ -125,13 +125,3 @@ function handleParams(params, res) {
 const job = nodeCron.schedule("* * * * *", () => {
         icbc.run();
 })
-/*icbc.run();
-var text = "Start Granstrom 1946690 Kelsall Revelstoke";
-var textArray = text.split(" ");
-
-const sql = 'INSERT INTO person (phonenumber, lastname, dlnumber, keyword, location) VALUES (?,?,?,?,?)';
-const sqlparams = ["+12508371392", textArray[1], textArray[2], textArray[3], textArray[4]];
-db.run(sql, sqlparams, function (err) {
-        
-        console.log( sqlparams, "id: " + this.lastID, err.message);
-})*/

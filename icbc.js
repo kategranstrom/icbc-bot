@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 var fs = require('fs');
 var nodemailer = require('nodemailer');
-var db = require("./persondb.js");
+const pool = require("./usersdb.js");
 
 function sleep(ms) {
   return new Promise((resolve) => {
@@ -96,18 +96,17 @@ async function run () {
   const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox','--disable-setuid-sandbox']});
   const page = await browser.newPage();
 
-  const sql = "SELECT * FROM person";
-  db.all(sql,[], async (err, rows) => {
+  const sql = "SELECT * FROM users";
+  pool.query(sql, async (err, res) => {
     if (err) {
       console.log(err.message)
     } else {
-      for (row of rows) {
+      for (row of res.rows) {
         await checkForAppointment(page, row.phonenumber, row.lastname, row.dlnumber, row.keyword, row.location, row.earliest, row.latest);
       }
       browser.close();
     }
   });
-  
 
   var ts = Date.now();
   var today = new Date(ts);

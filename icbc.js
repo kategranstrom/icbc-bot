@@ -76,11 +76,17 @@ async function checkForAppointment(page, phoneNumber, lastName, licenseNumber, m
       }
 
       if ((!earliestDate || earliestDate <= latestApptment) && (!latestDate || earliestApptment <= latestDate)) {
-        console.log('apptment found in the date range')
-        stream.write(today.getDate() + ", " + today.getHours() + ":" + today.getMinutes() + ': apptment found in the date range\n')
+        let datesString = "On ";
+        datesString += earliestApptment.toDateString();
+        if (earliestApptment != latestApptment) {
+          datesString += " - " + latestApptment.toDateString();
+        }
+
+        console.log('apptment found in the date range', datesString)
+        stream.write(today.getDate() + ", " + today.getHours() + ":" + today.getMinutes() + ': apptment found in the date range ' + datesString + '\n')
         client.messages
         .create({
-            body: `Appointment found!\n Log in to book: ${url}`,
+            body: `Appointment found! ${datesString}\nBook here: ${url}`,
             from: '+12108801540',
             to: phoneNumber
         })

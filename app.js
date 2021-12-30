@@ -113,6 +113,21 @@ function handleParams(params, res) {
                         console.log(twiml.toString(), sqlparams);
                         res.end(twiml.toString());
                 })
+        } else if (text.startsWith('Check info')) {
+                const sql = "SELECT * FROM users where phonenumber = $1";
+                const sqlparams = [params.From];
+                pool.query(sql, sqlparams, async (err, result) => {
+                        if (err) {      
+                                twiml.message("Error:" + err.message);
+                        } else if ( result.rowCount < 1 ) {
+                                twiml.message("Not an active user. Register by texting:\n'Start lastname licensenumber keyword location'");
+                        } else {
+                                const info = result.rows[0];
+                                twiml.message("Info being used by the ICBC bot:\nlast name: " + info.lastname + "\nlicense number: " + info.dlnumber + "\nkeyword: " + info.keyword + "\nlocation: " + info.location + "\nearliest date: " + new Date(parseInt(info.earliest)).toDateString() +"\nlatest date: " + new Date(parseInt(info.latest)).toDateString());
+                        }
+                        console.log(twiml.toString(), text, params.From);
+                        res.end(twiml.toString());
+                });
         } else if (text.startsWith('Run now')) { 
                 icbc.run();
         } else {

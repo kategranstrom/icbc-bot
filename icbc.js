@@ -80,7 +80,7 @@ async function checkForAppointment(page, phoneNumber, lastName, licenseNumber, m
         stream.write(today.getDate() + ", " + today.getHours() + ":" + today.getMinutes() + ': apptment found in the date range\n')
         client.messages
         .create({
-            body: 'Appointment found!',
+            body: `Appointment found!\n Log in to book: ${url}`,
             from: '+12108801540',
             to: phoneNumber
         })

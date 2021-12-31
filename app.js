@@ -94,7 +94,7 @@ function handleParams(params, res) {
         } else if (text.startsWith('Start')) {
                 const textArray = text.split(' ');
                 if ( textArray.length != 5 ) {
-                        twiml.message("To start the ICBC bot, send a text with the format:\n'Start lastname licensenumber keyword location'. Refer to https://icbc-bot.herokuapp.com/ for all possible commands.");
+                        twiml.message("To start the ICBC bot, send a text with the format:\n'Start lastname licensenumber keyword location'\n\nRefer to https://icbc-bot.herokuapp.com/ for instructions.");
                         res.end(twiml.toString());
                         console.log(twiml.toString(), text);
                         return;
@@ -131,7 +131,7 @@ function handleParams(params, res) {
         } else if (text.startsWith('Run now')) { 
                 icbc.run();
         } else {
-                twiml.message("Incorrect text format. Refer to https://icbc-bot.herokuapp.com/ for all possible commands.");
+                twiml.message("Incorrect text format. Refer to https://icbc-bot.herokuapp.com/ for instructions.");
                 console.log(twiml.toString(), text);
                 res.end(twiml.toString());
         }

@@ -17,7 +17,7 @@ app.listen(PORT, () => {
 })
 
 app.get('/', function (req, res) {
-        res.send('<html><body><h1>ICBC Bot</h1></body></html>');
+        res.sendFile('./index.html', { root: __dirname });//<html><body><h1>ICBC Bot</h1></body></html>');
     });
 
 app.post('/inbound', (req, res) => {
@@ -94,7 +94,7 @@ function handleParams(params, res) {
         } else if (text.startsWith('Start')) {
                 const textArray = text.split(' ');
                 if ( textArray.length != 5 ) {
-                        twiml.message("To start the ICBC bot, send a text with the format:\n'Start lastname licensenumber keyword location'");
+                        twiml.message("To start the ICBC bot, send a text with the format:\n'Start lastname licensenumber keyword location'. Refer to https://icbc-bot.herokuapp.com/ for all possible commands.");
                         res.end(twiml.toString());
                         console.log(twiml.toString(), text);
                         return;
@@ -131,7 +131,7 @@ function handleParams(params, res) {
         } else if (text.startsWith('Run now')) { 
                 icbc.run();
         } else {
-                twiml.message("Error: text format should be one of:\n'Start lastname licensenumber keyword location'\n'Finish'\n'Earliest mm/dd/yyyy'\n'Latest mm/dd/yyyy'\n'Update lastname licensenumber keyword location'");
+                twiml.message("Incorrect text format. Refer to https://icbc-bot.herokuapp.com/ for all possible commands.");
                 console.log(twiml.toString(), text);
                 res.end(twiml.toString());
         }

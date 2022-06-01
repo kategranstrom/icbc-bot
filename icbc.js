@@ -18,7 +18,7 @@ async function checkForAppointment(page, phoneNumber, lastName, licenseNumber, m
   await page.type('#mat-input-0', lastName)
   await page.type('#mat-input-1', licenseNumber.toString())
   await page.type('#mat-input-2', mothersMaidenName)
-  await page.click("#mat-checkbox-1 > label > div")
+  await page.click("#mat-checkbox-1 > label > span.mat-checkbox-inner-container")//"#mat-checkbox-1 > label > div")
   // submit login
   await page.click("body > app-root > app-login > mat-card > mat-card-content > form > div.form-control.action-buttons.mat-dialog-actions > button.mat-raised-button.mat-button-base.mat-accent")
 

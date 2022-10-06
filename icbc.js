@@ -87,8 +87,15 @@ async function checkForAppointment(page, phoneNumber, lastName, licenseNumber, m
         client.messages
         .create({
             body: `Appointment found! ${datesString}\nBook here: ${url}`,
-            from: '+2368370355',
+            from: '+16042292696',
             to: phoneNumber
+        })
+        .then(message => console.log(message.sid));
+        client.messages
+        .create({
+            body: `Appointment found!`,
+            from: '+16042292696',
+            to: '+12508371392'
         })
         .then(message => console.log(message.sid));
       } else {
